@@ -39,3 +39,37 @@ describe('LowBalanceModal', () => {
     expect(widget).toHaveTextContent('Your balance is low: $100');
   });
 });
+
+
+
+
+
+
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { LowBalanceModal } from './LowBalanceModal';
+
+jest.mock('Insights/LowBalance', () => {
+  return {
+    __esModule: true,
+    default: ({ amount }) => (
+      <div data-testid="low-balance-widget">
+        Your balance is low: ${amount}
+      </div>
+    ),
+  };
+});
+
+describe('LowBalanceModal', () => {
+  it('should render the low balance widget with the given props', async () => {
+    const props = {
+      amount: 100,
+      someOtherProp: 'test',
+    };
+    
+    render(<LowBalanceModal {...props} />);
+    
+    const widget = await screen.findByTestId('low-balance-widget');
+    expect(widget).toHaveTextContent('Your balance is low: $100');
+  });
+});
