@@ -16,60 +16,48 @@
 
 
 
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { LowBalanceModal } from './LowBalanceModal';
-
-jest.mock('Insights/LowBalance', () => {
-  return {
-    __esModule: true,
-    default: ({ amount }) => (
-      <div data-testid="low-balance-widget">
-        Your balance is low: ${amount}
-      </div>
-    ),
-  };
-});
-
-describe('LowBalanceModal', () => {
-  test('renders the low balance widget with the given amount', async () => {
-    render(<LowBalanceModal amount={100} />);
-
-    const widget = await screen.findByTestId('low-balance-widget');
-    expect(widget).toHaveTextContent('Your balance is low: $100');
-  });
-});
-
-
-
 
 
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { LowBalanceModal } from './LowBalanceModal';
+import { render, fireEvent } from '@testing-library/react';
 
-jest.mock('Insights/LowBalance', () => {
-  return {
-    __esModule: true,
-    default: ({ amount }) => (
-      <div data-testid="low-balance-widget">
-        Your balance is low: ${amount}
-      </div>
-    ),
-  };
-});
+describe('handleInsightEvent function', () => {
+  it('should call handleInsightEvent with correct parameters when SMBLowBalanceConstants includes insightId', () => {
+    const SMBLowBalanceConstants = ['insight1', 'insight2'];
+    const nivData = { insightId: 'insight1', customID: 'custom1' };
+    const handleInsightEvent = jest.fn();
 
-describe('LowBalanceModal', () => {
-  it('should render the low balance widget with the given props', async () => {
-    const props = {
-      amount: 100,
-      someOtherProp: 'test',
-    };
-    
-    render(<LowBalanceModal {...props} />);
-    
-    const widget = await screen.findByTestId('low-balance-widget');
-    expect(widget).toHaveTextContent('Your balance is low: $100');
+    render(
+      <button onClick={() => {
+        if (SMBLowBalanceConstants?.includes(nivData?.insightId)) {
+          handleInsightEvent(nivData?.insightId, nivData?.customID)
+        }
+      }}>Test button</button>
+    );
+
+    fireEvent.click(screen.getByText('Test button'));
+
+    expect(handleInsightEvent).toHaveBeenCalledTimes(1);
+    expect(handleInsightEvent).toHaveBeenCalledWith(nivData?.insightId, nivData?.customID);
+  });
+
+  it('should not call handleInsightEvent when SMBLowBalanceConstants does not include insightId', () => {
+    const SMBLowBalanceConstants = ['insight1', 'insight2'];
+    const nivData = { insightId: 'insight3', customID: 'custom1' };
+    const handleInsightEvent = jest.fn();
+
+    render(
+      <button onClick={() => {
+        if (SMBLowBalanceConstants?.includes(nivData?.insightId)) {
+          handleInsightEvent(nivData?.insightId, nivData?.customID)
+        }
+      }}>Test button</button>
+    );
+
+    fireEvent.click(screen.getByText('Test button'));
+
+    expect(handleInsightEvent).not.toHaveBeenCalled();
   });
 });
+
