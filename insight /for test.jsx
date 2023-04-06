@@ -1,31 +1,67 @@
-const showModalChange = (isShow) => {
-    setShowModal(isShow)
-    setSelectedInsightData({
-      showModal: isShow,
-      selectedInsight: '',
-      selectedLowBal: ''
-    })
+import React, { useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+
+const data = [
+  { name: 'A', value: 10 },
+  { name: 'B', value: 20 },
+  { name: 'C', value: 30 },
+];
+
+const CustomBar = ({ data, onMouseEnter, onMouseLeave }) => {
+  const [isHover, setIsHover] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHover(true);
+    onMouseEnter && onMouseEnter(data);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHover(false);
+    onMouseLeave && onMouseLeave();
+  };
+
+  return (
+    <Bar
+      data={data}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      fill={isHover ? '#8884d8' : '#82ca9d'}
+    />
+  );
+};
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip">
+        <p className="label">{`${label} : ${payload[0].value}`}</p>
+      </div>
+    );
   }
 
+  return null;
+};
 
+const Chart = () => {
+  const [tooltipData, setTooltipData] = useState(null);
 
+  const handleBarMouseEnter = (data) => {
+    setTooltipData(data);
+  };
 
-import React from 'react'
-import { render, fireEvent } from '@testing-library/react'
-import { showModalChange } from './your-file-name'
+  const handleBarMouseLeave = () => {
+    setTooltipData(null);
+  };
 
-describe('showModalChange function', () => {
-  it('should update the showModal state and setSelectedInsightData with the correct values', () => {
-    const setShowModal = jest.fn()
-    const setSelectedInsightData = jest.fn()
+  return (
+    <BarChart width={500} height={300} data={data}>
+      <XAxis dataKey="name" />
+      <YAxis />
+      <CustomTooltip />
+      <CustomBar onMouseEnter={handleBarMouseEnter} onMouseLeave={handleBarMouseLeave} />
+    </BarChart>
+  );
+};
 
-    showModalChange(true, setShowModal, setSelectedInsightData)
+export default Chart;
 
-    expect(setShowModal).toHaveBeenCalledWith(true)
-    expect(setSelectedInsightData).toHaveBeenCalledWith({
-      showModal: true,
-      selectedInsight: '',
-      selectedLowBal: ''
-    })
-  })
-})
