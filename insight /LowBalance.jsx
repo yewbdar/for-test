@@ -1,3 +1,8 @@
+import React from 'react'
+import PropTypes from 'prop-types'
+
+import USBReBarChart from './ReChart/USBReBarChart'
+
 const getbarXAxis = (block) => {
     return {
         categories: block.categories
