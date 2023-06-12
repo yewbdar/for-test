@@ -1,0 +1,46 @@
+ <USBChartBarChart
+                
+                onMouseMove={(mouseMovebar) => {
+                    const stateActive = mouseMovebar.isTooltipActive
+                        ? mouseMovebar
+                        : getRechartBarEmptyState()
+                    const mouseX = stateActive.activeCoordinate
+                        ? stateActive?.activeCoordinate?.x
+                        : 0
+                    const mouseY = stateActive.activeCoordinate
+                        ? stateActive?.activeCoordinate?.y
+                        : 0
+                    const tooltipYval = mouseY - 60
+                    const tooltipXval = mouseX - 35
+                    dispatch({
+                        type: fromConstants.RECHART_REDUCER_CONSTANTS
+                            .TOOLTIPX,
+                        payload: { tooltipX: tooltipXval }
+                    })
+                    let rechartReactangle = document?.getElementById(
+                        `rechart-${stateActive?.activeTooltipIndex}`
+                    )
+                    rechartReactangle = Math.round(
+                        rechartReactangle?.getAttribute('height')
+                    )
+                    if (
+                        stateActive.activePayload[0]?.payload
+                            ?.value === 0 ||
+                        rechartReactangle <= 5
+                    ) {
+                        dispatch({
+                            type: fromConstants
+                                .RECHART_REDUCER_CONSTANTS.TOOLTIPY,
+                            payload: { tooltipY: 120 }
+                        })
+                    }
+                    const activetooltip = stateActive?.activeLabel
+                        ? stateActive?.activeTooltipIndex
+                        : null
+                    dispatch({
+                        type: fromConstants.RECHART_REDUCER_CONSTANTS
+                            .FOCUSBAR,
+                        payload: { focusBar: activetooltip }
+                    })
+                }}
+            >
