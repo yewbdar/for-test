@@ -1,67 +1,30 @@
-import React, { useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { BarChart, Bar, Tooltip, Customized } from 'recharts';
 
-const data = [
-  { name: 'A', value: 10 },
-  { name: 'B', value: 20 },
-  { name: 'C', value: 30 },
-];
-
-const CustomBar = ({ data, onMouseEnter, onMouseLeave }) => {
-  const [isHover, setIsHover] = useState(false);
-
-  const handleMouseEnter = () => {
-    setIsHover(true);
-    onMouseEnter && onMouseEnter(data);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHover(false);
-    onMouseLeave && onMouseLeave();
-  };
-
-  return (
-    <Bar
-      data={data}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      fill={isHover ? '#8884d8' : '#82ca9d'}
-    />
-  );
-};
-
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
+    const bar = payload[0]; // Assuming you have a single bar in the chart
+    const { x, y, width, height } = bar;
+    const tooltipX = x + width / 2 - 15; // Adjusted with an offset of 15px
+
     return (
-      <div className="custom-tooltip">
-        <p className="label">{`${label} : ${payload[0].value}`}</p>
-      </div>
+      <Customized x={tooltipX} y={y} width={0} height={0} zIndex={9999}>
+        <div className="custom-tooltip">
+          {/* Your tooltip content */}
+        </div>
+      </Customized>
     );
   }
 
   return null;
 };
 
-const Chart = () => {
-  const [tooltipData, setTooltipData] = useState(null);
-
-  const handleBarMouseEnter = (data) => {
-    setTooltipData(data);
-  };
-
-  const handleBarMouseLeave = () => {
-    setTooltipData(null);
-  };
-
+const YourBarChart = () => {
   return (
-    <BarChart width={500} height={300} data={data}>
-      <XAxis dataKey="name" />
-      <YAxis />
-      <CustomTooltip />
-      <CustomBar onMouseEnter={handleBarMouseEnter} onMouseLeave={handleBarMouseLeave} />
+    <BarChart width={400} height={300} data={data}>
+      <Bar dataKey="value" fill="#8884d8" />
+      <Tooltip content={<CustomTooltip />} />
     </BarChart>
   );
 };
 
-export default Chart;
 
